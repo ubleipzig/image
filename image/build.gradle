@@ -15,6 +15,7 @@ dependencies {
 jar {
     manifest {
         description project.description
+        docURL project.docURL
         vendor project.vendor
         license project.license
 

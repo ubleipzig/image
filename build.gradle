@@ -68,8 +68,12 @@ allprojects { subproj ->
 
     ext {
         moduleName = "de.ubleipzig.image.metadata"
+        url = 'https://github.com/ubleipzig/image-metadata'
+        docURL = 'https://ubleipzig.github.io/image-metadata/apidocs/'
         vendor = 'UB Leipzig'
         license = 'GPL v3'
+        inceptionYear = '2018'
+        homepage = 'https://github.com/ubleipzig/image-metadata'
     }
 
     repositories {
