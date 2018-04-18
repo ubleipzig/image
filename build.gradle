@@ -1,0 +1,240 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath("org.junit.platform:junit-platform-gradle-plugin:1.1.1")
+    }
+}
+
+plugins {
+    id 'com.github.ben-manes.versions' version '0.15.0'
+    id 'com.github.hierynomus.license' version '0.13.1'
+    id 'net.researchgate.release' version '2.6.0'
+    id 'com.github.kt3k.coveralls' version '2.8.1'
+    id 'org.sonarqube' version '2.5'
+}
+
+ext {
+    commonsCodecVersion = '1.11'
+    commonsIoVersion = '2.6'
+    logbackVersion = '1.2.3'
+    metadataExtractorVersion = '2.11.0'
+    jacksonVersion = '2.9.1'
+
+    /* Testing */
+    apiguardianVersion = '1.0.0'
+    junitVersion = '5.1.1'
+    mockitoVersion = '2.18.0'
+    slf4jVersion = '1.7.25'
+
+    jacocoVersion = '0.8.1'
+    checkstyleVersion = '8.8'
+
+    /* OSGI */
+    projectOsgiVersion = project.version.replaceAll("-SNAPSHOT", ".SNAPSHOT")
+
+    jacocoTestProjects = ['image']
+}
+
+
+
+allprojects { subproj ->
+    group 'de.ubleipzig'
+
+    apply plugin: 'maven'
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.bmuschko.nexus'
+    apply plugin: 'idea'
+    apply plugin: 'org.junit.platform.gradle.plugin'
+    apply plugin: 'checkstyle'
+    apply plugin: 'com.github.hierynomus.license'
+    apply plugin: 'jacoco'
+    apply plugin: 'signing'
+
+    idea {
+        module {
+            outputDir file('build/classes/main')
+            testOutputDir file('build/classes/test')
+        }
+    }
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    ext {
+        moduleName = "de.ubleipzig.image.metadata"
+        vendor = 'UB Leipzig'
+        license = 'GPL v3'
+    }
+
+    repositories {
+        mavenCentral()
+        flatDir {
+            dirs "$rootProject.projectDir/lib"
+        }
+    }
+
+    dependencies {
+        testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+        testImplementation("org.apiguardian:apiguardian-api:$apiguardianVersion")
+        testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    }
+
+}
+
+subprojects { subproj ->
+    afterEvaluate {
+        gradle.projectsEvaluated {
+            tasks.withType(JavaCompile) {
+                options.compilerArgs.add("-Xlint:unchecked")
+                options.compilerArgs.add("-Xlint:deprecation")
+            }
+        }
+
+        compileTestJava {
+            doFirst {
+                options.compilerArgs = [
+                        '-Xlint:deprecation'
+                ]
+            }
+        }
+    }
+
+    checkstyle {
+        configFile = rootProject.file('buildtools/src/main/resources/checkstyle/checkstyle.xml')
+        configProperties.checkstyleConfigDir = rootProject.file('buildtools/src/main/resources/checkstyle/')
+        toolVersion = checkstyleVersion
+    }
+
+    license {
+        include "**/*.java"
+        header rootProject.file('buildtools/src/main/resources/license/HEADER.txt')
+        strictCheck true
+        mapping {
+            java = 'SLASHSTAR_STYLE'
+        }
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+
+    modifyPom {
+        //noinspection GroovyAssignabilityCheck
+        project {
+            name name
+            description description
+            url url
+            inceptionYear inceptionYear
+
+            organization {
+                name vendor
+                url homepage
+            }
+
+            developers {
+                developer {
+                    id 'christopher-johnson'
+                    name 'Christopher Johnson'
+                    email 'chjohnson @ (domain of organization url)'
+                    organization = 'UB Leipzig'
+                    organizationUrl 'http://www.ub.uni-leipzig.de/'
+                    roles {
+                        role 'developer'
+                    }
+                    timezone '+1'
+                }
+            }
+
+            scm {
+                connection 'scm:git:git://github.com/ubleipzig/image-metadata.git'
+                developerConnection 'scm:git:git://github.com/ubleipzig/image-metadata.git'
+                url 'https://github.com/ubleipzig/image-metadata'
+                tag 'HEAD'
+            }
+
+            licenses {
+                license {
+                    name 'GPL v3'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0'
+                }
+            }
+        }
+    }
+
+    nexus {
+        sign = true
+        repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+        snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
+
+    jacoco.toolVersion = jacocoVersion
+
+    afterEvaluate {
+        if (subproj.name in jacocoTestProjects) {
+            jacoco {
+                applyTo subproj.tasks.matching { it.name == 'junitPlatformTest' }
+            }
+        }
+    }
+
+    javadoc {
+        outputs.upToDateWhen { false }
+        source sourceSets.main.allJava
+        classpath = files(sourceSets.main.compileClasspath)
+        destinationDir = new File(projectDir, "docs/${version}")
+        options {
+            links "https://docs.oracle.com/javase/8/docs/api/"
+        }
+    }
+}
+
+configure(rootProject) {
+
+    task apidocs(type: Javadoc, dependsOn: getTasksByName('docs', true)) {
+        outputs.upToDateWhen { false }
+        destinationDir = new File(projectDir, "docs/apidocs")
+        title = "Image Metadata Documentation"
+        exclude '**/impl/*'
+        exclude '**/*Tests.java'
+        options {
+            memberLevel = JavadocMemberLevel.PUBLIC
+            links "https://docs.oracle.com/javase/8/docs/api/"
+        }
+
+        source subprojects.collect { project -> project.sourceSets.main.allJava }
+        classpath = files(subprojects.collect { project -> project.sourceSets.main.compileClasspath })
+    }
+
+    task jacocoMerge(type: JacocoMerge) {
+        subprojects.findAll { it.name in jacocoTestProjects }
+                .each { subproj ->
+            executionData fileTree(dir: "${subproj.buildDir}/jacoco", include: '*.exec')
+            dependsOn subproj.tasks.withType(Test)
+        }
+    }
+
+    task jacocoRootReport(type: JacocoReport, dependsOn: jacocoMerge) {
+        sourceDirectories = files(subprojects
+                .findAll { it.name in jacocoTestProjects }
+                .sourceSets.main.allJava.srcDirs)
+        classDirectories = files(subprojects
+                .findAll { it.name in jacocoTestProjects }
+                .sourceSets.main.output)
+        executionData jacocoMerge.destinationFile
+        reports {
+            html.enabled = true
+            xml.enabled = true
+            csv.enabled = false
+        }
+    }
+}

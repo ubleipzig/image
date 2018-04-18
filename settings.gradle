@@ -1,0 +1,4 @@
+rootProject.name = 'image-metadata'
+include 'image'
+
+project(':image').projectDir = "$rootDir/image" as File
