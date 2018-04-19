@@ -19,4 +19,4 @@ after_success:
 
 env:
   global:
-    - CODECOV_TOKEN=d9821480-759f-486c-8c78-d2d510da395b
+    - CODECOV_TOKEN=52c8d514-aedd-4f0d-9a74-e52f4560cdbb
