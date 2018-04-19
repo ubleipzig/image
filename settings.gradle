@@ -1,4 +1,4 @@
-rootProject.name = 'image-metadata'
-include 'image'
+rootProject.name = 'image'
+include 'image.metadata'
 
-project(':image').projectDir = "$rootDir/image" as File
+project(':image.metadata').projectDir = "$rootDir/image.metadata" as File

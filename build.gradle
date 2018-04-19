@@ -36,7 +36,7 @@ ext {
     /* OSGI */
     projectOsgiVersion = project.version.replaceAll("-SNAPSHOT", ".SNAPSHOT")
 
-    jacocoTestProjects = ['image']
+    jacocoTestProjects = ['image.metadata']
 }
 
 
@@ -67,13 +67,12 @@ allprojects { subproj ->
     targetCompatibility = 1.8
 
     ext {
-        moduleName = "de.ubleipzig.image.metadata"
-        url = 'https://github.com/ubleipzig/image-metadata'
-        docURL = 'https://ubleipzig.github.io/image-metadata/apidocs/'
+        url = 'https://github.com/ubleipzig/image'
+        docURL = 'https://ubleipzig.github.io/image/apidocs/'
         vendor = 'UB Leipzig'
         license = 'GPL v3'
         inceptionYear = '2018'
-        homepage = 'https://github.com/ubleipzig/image-metadata'
+        homepage = 'https://github.com/ubleipzig/image'
     }
 
     repositories {
@@ -160,9 +159,9 @@ subprojects { subproj ->
             }
 
             scm {
-                connection 'scm:git:git://github.com/ubleipzig/image-metadata.git'
-                developerConnection 'scm:git:git://github.com/ubleipzig/image-metadata.git'
-                url 'https://github.com/ubleipzig/image-metadata'
+                connection 'scm:git:git://github.com/ubleipzig/image.git'
+                developerConnection 'scm:git:git://github.com/ubleipzig/image.git'
+                url 'https://github.com/ubleipzig/image'
                 tag 'HEAD'
             }
 

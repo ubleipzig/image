@@ -1,11 +1,13 @@
-## Image Metadata
+## Image 
+A collection of image processing utilities
 
+### Image Metadata
 A utility that generates JSON objects that contain image metadata.
 
-[![Build Status](https://travis-ci.org/ubleipzig/image-metadata.png?branch=master)](https://travis-ci.org/ubleipzig/image-metadata)
-[![codecov](https://codecov.io/gh/ubleipzig/image-metadata/branch/master/graph/badge.svg)](https://codecov.io/gh/ubleipzig/image-metadata)
-[![Javadoc](https://javadoc-badge.appspot.com/de.ubleipzig/image-metadata.svg?label=javadoc)](https://ubleipzig.github.io/image-metadata/apidocs/)
-[![Maven Central](https://img.shields.io/maven-central/v/de.ubleipzig/image.svg)](https://mvnrepository.com/artifact/de.ubleipzig/image/0.1.0)
+[![Build Status](https://travis-ci.org/ubleipzig/image.png?branch=master)](https://travis-ci.org/ubleipzig/image)
+[![codecov](https://codecov.io/gh/ubleipzig/image/branch/master/graph/badge.svg)](https://codecov.io/gh/ubleipzig/image)
+[![Javadoc](https://javadoc-badge.appspot.com/de.ubleipzig/image.metadata.svg?label=javadoc)](https://ubleipzig.github.io/image/apidocs/)
+[![Maven Central](https://img.shields.io/maven-central/v/de.ubleipzig/image.metadata.svg)](https://mvnrepository.com/artifact/de.ubleipzig/image.metadata/0.1.0)
 
 Image Metadata Builder Process:
 * Generate an image dimension manifest with :
