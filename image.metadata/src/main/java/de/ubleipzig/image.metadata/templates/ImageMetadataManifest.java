@@ -1,6 +1,6 @@
 /*
- * Image Metadata
- * Copyright (C) 2017 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Image
+ * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+
 package de.ubleipzig.image.metadata.templates;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

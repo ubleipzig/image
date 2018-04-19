@@ -1,6 +1,6 @@
 /*
- * Image Metadata
- * Copyright (C) 2017 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Image
+ * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+
 package de.ubleipzig.image.metadata;
 
 import java.io.BufferedReader;
@@ -27,12 +28,6 @@ import java.util.stream.Collectors;
 
 public abstract class CommonTest {
 
-    String randomString() {
-        final byte[] array = new byte[7];
-        new Random().nextBytes(array);
-        return new String(array, Charset.forName("UTF-8"));
-    }
-
     static String read(final InputStream input) {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
             return buffer.lines().collect(Collectors.joining("\n"));
@@ -40,5 +35,11 @@ public abstract class CommonTest {
             e.printStackTrace();
             return null;
         }
+    }
+
+    String randomString() {
+        final byte[] array = new byte[7];
+        new Random().nextBytes(array);
+        return new String(array, Charset.forName("UTF-8"));
     }
 }

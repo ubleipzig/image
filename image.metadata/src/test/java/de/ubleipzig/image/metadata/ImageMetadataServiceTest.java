@@ -1,6 +1,6 @@
 /*
- * Image Metadata
- * Copyright (C) 2017 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Image
+ * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ public class ImageMetadataServiceTest extends CommonTest {
                     imageSourceDir = Paths.get(resource.toURI()).toFile().getPath();
                 } else {
                     imageSourceDir = Paths.get(
-                           ImageMetadataServiceTest.class.getResource("/00000001.jpg").toURI()).toFile().getParent();
+                            ImageMetadataServiceTest.class.getResource("/00000001.jpg").toURI()).toFile().getParent();
                 }
             } catch (URISyntaxException | MalformedURLException e) {
                 e.printStackTrace();

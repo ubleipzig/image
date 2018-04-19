@@ -1,6 +1,6 @@
 /*
- * Image Metadata
- * Copyright (C) 2017 Leipzig University Library <info@ub.uni-leipzig.de>
+ * Image
+ * Copyright (C) 2018 Leipzig University Library <info@ub.uni-leipzig.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
-
 /**
  * ImageMetadataServiceImpl.
  *
@@ -69,6 +68,7 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
     private FileBinaryService service = new FileBinaryService();
     private ImageMetadataServiceConfig imageMetadataGeneratorConfig;
     private String IO_ERROR_MESSAGE = "IO Error: ";
+
     /**
      * ImageMetadataServiceImpl.
      *
