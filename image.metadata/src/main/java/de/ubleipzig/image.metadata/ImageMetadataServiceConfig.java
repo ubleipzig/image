@@ -31,7 +31,8 @@ public class ImageMetadataServiceConfig {
     private String dimensionManifestFilePath;
     private String dimensionManifest;
     private String imageMetadataManifest;
-
+    private String imageMetadataManifestOutputPath;
+    private String dimensionManifestOutputPath;
     /**
      * getImageSourceDir.
      *
@@ -48,6 +49,42 @@ public class ImageMetadataServiceConfig {
      */
     public final void setImageSourceDir(final String imageSourceDir) {
         this.imageSourceDir = imageSourceDir;
+    }
+
+    /**
+     * getImageMetadataManifestOutputPath.
+     *
+     * @return {@link String}
+     */
+    public String getImageMetadataManifestOutputPath() {
+        return this.imageMetadataManifestOutputPath;
+    }
+
+    /**
+     * setImageMetadataManifestOutputPath.
+     *
+     * @param imageMetadataManifestOutputPath imageMetadataManifestOutputPath
+     */
+    public final void setImageMetadataManifestOutputPath(final String imageMetadataManifestOutputPath) {
+        this.imageMetadataManifestOutputPath = imageMetadataManifestOutputPath;
+    }
+
+    /**
+     * getDimensionManifestOutputPath.
+     *
+     * @return {@link String}
+     */
+    public String getDimensionManifestOutputPath() {
+        return this.dimensionManifestOutputPath;
+    }
+
+    /**
+     * setImageMetadataManifestOutputPath.
+     *
+     * @param dimensionManifestOutputPath dimensionManifestOutputPath
+     */
+    public final void setDimensionManifestOutputPath(final String dimensionManifestOutputPath) {
+        this.dimensionManifestOutputPath = dimensionManifestOutputPath;
     }
 
     /**

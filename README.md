@@ -9,12 +9,30 @@ A utility that generates JSON objects that contain image metadata.
 [![Javadoc](https://javadoc-badge.appspot.com/de.ubleipzig/image.metadata.svg?label=javadoc)](https://ubleipzig.github.io/image/apidocs/)
 [![Maven Central](https://img.shields.io/maven-central/v/de.ubleipzig/image.metadata.svg)](https://mvnrepository.com/artifact/de.ubleipzig/image.metadata/0.1.0)
 
-Image Metadata Builder Process:
+
+#### Install
+`./gradlew clean distTar`
+
+* extract `image.metadata-0.2.0-SNAPSHOT.tar`
+
+#### Run as Utility from CLI
+
+```bash
+./image.metadata -i {$image_source_directory} -o {$dimension_manifest_output_file_path} -z {$metadata_manifest_output_path} (optional)
+```
+
+#### Use in Java:
+
+```groovy
+ compile group: 'de.ubleipzig', name: 'image.metadata', version: '0.1.0'
+```
+
+
 * Generate an image dimension manifest with :
 
 ```java
 /**
-@param String imageSourceDir
+* @param String imageSourceDir
 */
 ```
 

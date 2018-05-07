@@ -26,6 +26,10 @@ import java.util.List;
 
 public interface ImageMetadataService {
 
+    /**
+     *
+     */
+    void run();
 
     /**
      * buildImageMetadataManifest.

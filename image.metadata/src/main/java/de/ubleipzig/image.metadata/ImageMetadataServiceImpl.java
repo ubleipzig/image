@@ -66,21 +66,34 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static Logger log = getLogger(ImageMetadataServiceImpl.class);
     private FileBinaryService service = new FileBinaryService();
-    private ImageMetadataServiceConfig imageMetadataGeneratorConfig;
+    private ImageMetadataServiceConfig imageMetadataServiceConfig;
     private String IO_ERROR_MESSAGE = "IO Error: ";
 
     /**
      * ImageMetadataServiceImpl.
      *
-     * @param imageMetadataGeneratorConfig imageMetadataGeneratorConfig
+     * @param imageMetadataServiceConfig imageMetadataGeneratorConfig
      */
-    public ImageMetadataServiceImpl(final ImageMetadataServiceConfig imageMetadataGeneratorConfig) {
-        this.imageMetadataGeneratorConfig = imageMetadataGeneratorConfig;
+    public ImageMetadataServiceImpl(final ImageMetadataServiceConfig imageMetadataServiceConfig) {
+        this.imageMetadataServiceConfig = imageMetadataServiceConfig;
+    }
+
+    @Override
+    public void run() {
+        log.info("Running ImageMetadataService...");
+        final String imageManifest = buildImageMetadataManifest();
+        final String imageManifestOutputPath = imageMetadataServiceConfig.getImageMetadataManifestOutputPath();
+        if ( imageManifestOutputPath != null) {
+            writeToFile(imageManifest, new File(imageManifestOutputPath));
+            log.debug("Writing Image Metadata Manifest to: {}", imageManifestOutputPath);
+        }
+        final ImageDimensionManifest dimManifest = buildDimensionManifest(imageManifest);
+        serializeImageDimensionManifest(dimManifest, imageMetadataServiceConfig.getDimensionManifestOutputPath());
     }
 
     @Override
     public String buildImageMetadataManifest() {
-        final String collection = imageMetadataGeneratorConfig.getImageSourceDir();
+        final String collection = imageMetadataServiceConfig.getImageSourceDir();
         try {
             //this assumes that all image binaries will have filenames that are integers
             final Stream<Path> paths = Files.walk(Paths.get(collection)).filter(Files::isRegularFile).filter(
@@ -138,7 +151,7 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
     public ImageDimensionManifest buildDimensionManifest(final String imageManifest) {
         try {
             final ImageDimensionManifest dimManifest = new ImageDimensionManifest();
-            final String metadataFilePath = imageMetadataGeneratorConfig.getImageMetadataFilePath();
+            final String metadataFilePath = imageMetadataServiceConfig.getImageMetadataFilePath();
             final byte[] body;
             final String manifestString;
             if (metadataFilePath != null) {
@@ -197,7 +210,7 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
     public List<ImageDimensions> unmarshallDimensionManifestFromFile() {
         try {
             final byte[] body = Files.readAllBytes(
-                    Paths.get(imageMetadataGeneratorConfig.getDimensionManifestFilePath()));
+                    Paths.get(imageMetadataServiceConfig.getDimensionManifestFilePath()));
             final String manifestString = new String(body);
             final ImageDimensionManifest dimManifest = MAPPER.readValue(
                     manifestString, new TypeReference<ImageDimensionManifest>() {
@@ -212,7 +225,7 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
     @Override
     public List<ImageDimensions> unmarshallDimensionManifestFromRemote() {
         try {
-            final byte[] body = imageMetadataGeneratorConfig.getDimensionManifest().getBytes();
+            final byte[] body = imageMetadataServiceConfig.getDimensionManifest().getBytes();
             final String manifestString = new String(body);
             final ImageDimensionManifest dimManifest = MAPPER.readValue(
                     manifestString, new TypeReference<ImageDimensionManifest>() {
