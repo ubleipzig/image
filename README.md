@@ -15,6 +15,9 @@ A utility that generates JSON objects that contain image metadata.
 
 * extract `image.metadata-0.2.0-SNAPSHOT.tar`
 
+## Sequenced Image Filename Specification
+This tool assumes that all images will have integer filenames in accordance with their sequence in the image collection.
+
 #### Run as Utility from CLI
 
 ```bash
