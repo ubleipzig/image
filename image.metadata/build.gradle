@@ -4,6 +4,7 @@ apply plugin: "application"
 mainClassName = "de.ubleipzig.image.metadata.ImageMetadataServiceDriver"
 
 dependencies {
+    api("io.dropwizard:dropwizard-core:$dropwizardVersion")
     implementation("commons-io:commons-io:$commonsIoVersion") { force = true }
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")

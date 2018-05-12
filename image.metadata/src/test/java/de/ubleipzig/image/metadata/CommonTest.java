@@ -18,15 +18,34 @@
 
 package de.ubleipzig.image.metadata;
 
+import io.dropwizard.configuration.ConfigurationException;
+import io.dropwizard.configuration.YamlConfigurationFactory;
+import io.dropwizard.jackson.Jackson;
+import io.dropwizard.jersey.validation.Validators;
+
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 public abstract class CommonTest {
+
+    static ImageMetadataServiceConfig getImageMetadataServiceConfig() {
+        final ImageMetadataServiceConfig imageMetadataServiceConfig;
+        try {
+            imageMetadataServiceConfig = new YamlConfigurationFactory<>(
+                    ImageMetadataServiceConfig.class, Validators.newValidator(), Jackson.newObjectMapper(), "").build(
+                    new File(CommonTest.class.getResource("/imageMetadataServiceConfig-test.yml").toURI()));
+        } catch (IOException | ConfigurationException | URISyntaxException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return imageMetadataServiceConfig;
+    }
 
     static String read(final InputStream input) {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {

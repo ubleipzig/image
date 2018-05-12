@@ -21,6 +21,7 @@ ext {
     commonsCLIVersion = '1.4'
     commonsCodecVersion = '1.11'
     commonsIoVersion = '2.6'
+    dropwizardVersion = '1.2.0'
     logbackVersion = '1.2.3'
     metadataExtractorVersion = '2.11.0'
     jacksonVersion = '2.9.1'

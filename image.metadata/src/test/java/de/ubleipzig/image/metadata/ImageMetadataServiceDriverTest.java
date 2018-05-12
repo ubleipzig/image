@@ -15,21 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
-package de.ubleipzig.image.metadata;
 
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
+package de.ubleipzig.image.metadata;
 
 import org.junit.jupiter.api.Test;
 
-public class ImageMetadataServiceDriverTest {
+public class ImageMetadataServiceDriverTest extends CommonTest {
 
     private String imageSourceDir;
 
     @Test
-    public void testStandardType() throws URISyntaxException {
-        imageSourceDir = Paths.get(
-                ImageMetadataServiceTest.class.getResource("/00000001.jpg").toURI()).toFile().getParent();
+    public void testStandardType() {
+        imageSourceDir = ArgParserTest.class.getResource(getImageMetadataServiceConfig().getImageSourceDir()).getPath();
         final String[] args = new String[]{"-i", imageSourceDir, "-z", "/tmp/metadata-manifest.json", "-o",
                 "/tmp/output.json"};
         ImageMetadataServiceDriver.main(args);

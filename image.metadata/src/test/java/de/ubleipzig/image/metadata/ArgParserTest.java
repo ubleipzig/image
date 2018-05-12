@@ -21,25 +21,17 @@ package de.ubleipzig.image.metadata;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class ArgParserTest {
+public class ArgParserTest extends CommonTest {
 
     private ArgParser parser;
     private static String imageSourceDir;
 
     @BeforeAll
     static void init() {
-        try {
-            imageSourceDir = Paths.get(
-                    ImageMetadataServiceTest.class.getResource("/00000001.jpg").toURI()).toFile().getParent();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        imageSourceDir = ArgParserTest.class.getResource(getImageMetadataServiceConfig().getImageSourceDir()).getPath();
     }
 
     @Test

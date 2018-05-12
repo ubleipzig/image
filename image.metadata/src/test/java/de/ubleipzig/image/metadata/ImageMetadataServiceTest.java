@@ -55,13 +55,11 @@ public class ImageMetadataServiceTest extends CommonTest {
     private static String imageManifestPid;
     private static String dimensionManifestPid;
     private static String imageSourceDir;
+    private static String dimensionManifestFilePath;
+    private static String imageMetadataManifestFilePath;
 
     //Note: this is for testing large directories, only enable if you can wait ...
     private static String gigabyteSourceDir = "file:///media/gb/images";
-    private static String dimensionManifest =
-            "/remote-manifest/dimension-manifest-test-ff5fd8bb-859d-4a98-82ce-57aada0c5bb0.json";
-    private static String metadataManifest =
-            "/remote-manifest/image-manifest-test-73ed7acb-03cd-4122-8d7a-d2b36ec8fc0f.json";
 
     @Mock
     private File mockFilename = new File(randomString());
@@ -75,9 +73,13 @@ public class ImageMetadataServiceTest extends CommonTest {
                 if (Paths.get(resource.toURI()).toFile().exists()) {
                     imageSourceDir = Paths.get(resource.toURI()).toFile().getPath();
                 } else {
-                    imageSourceDir = Paths.get(
-                            ImageMetadataServiceTest.class.getResource("/00000001.jpg").toURI()).toFile().getParent();
+                    imageSourceDir = ImageMetadataServiceTest.class.getResource(
+                            getImageMetadataServiceConfig().getImageSourceDir()).getPath();
                 }
+                dimensionManifestFilePath = ImageMetadataServiceTest.class.getResource(
+                        getImageMetadataServiceConfig().getDimensionManifestFilePath()).getPath();
+                imageMetadataManifestFilePath = ImageMetadataServiceTest.class.getResource(
+                        getImageMetadataServiceConfig().getImageMetadataFilePath()).getPath();
             } catch (URISyntaxException | MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -101,6 +103,27 @@ public class ImageMetadataServiceTest extends CommonTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    void testImageProcessingException() {
+        final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
+        config.setImageSourceDir(ImageMetadataServiceTest.class.getResource("/bad-images").getPath());
+        final ImageMetadataService generator = new ImageMetadataServiceImpl(config);
+        assertThrows(NullPointerException.class, () -> {
+            generator.buildImageMetadataManifest();
+        });
+    }
+
+    @Test
+    void testImageMetadataIOException() {
+        final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
+        config.setImageSourceDir("/non-existing-directory");
+        final ImageMetadataService generator = new ImageMetadataServiceImpl(config);
+        assertThrows(RuntimeException.class, () -> {
+            generator.buildImageMetadataManifest();
+        });
+    }
+
 
     @Test
     void testBuildImageDimensionsFromManifest() {
@@ -140,7 +163,8 @@ public class ImageMetadataServiceTest extends CommonTest {
 
     @Test
     void testGetDimensionManifestFromRemoteSource() {
-        final InputStream is = ImageMetadataServiceTest.class.getResourceAsStream(dimensionManifest);
+        final InputStream is = ImageMetadataServiceTest.class.getResourceAsStream(
+                getImageMetadataServiceConfig().getDimensionManifestFilePath());
         final String dimManifest = read(is);
         final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
         config.setDimensionManifest(dimManifest);
@@ -151,9 +175,8 @@ public class ImageMetadataServiceTest extends CommonTest {
 
     @Test
     void testGetDimensionManifestFromDimensionFile() {
-        final String path = ImageMetadataServiceTest.class.getResource(dimensionManifest).getPath();
         final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
-        config.setDimensionManifestFilePath(path);
+        config.setDimensionManifestFilePath(dimensionManifestFilePath);
         final ImageMetadataService generator = new ImageMetadataServiceImpl(config);
         final List<ImageDimensions> dimList = generator.unmarshallDimensionManifestFromFile();
         assertEquals(3, dimList.size());
@@ -161,9 +184,8 @@ public class ImageMetadataServiceTest extends CommonTest {
 
     @Test
     void testBuildDimensionManifestFromMetadataFile() {
-        final String path = ImageMetadataServiceTest.class.getResource(metadataManifest).getPath();
         final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
-        config.setImageMetadataFilePath(path);
+        config.setImageMetadataFilePath(imageMetadataManifestFilePath);
         final ImageMetadataService generator = new ImageMetadataServiceImpl(config);
         final ImageDimensionManifest dimManifest = generator.buildDimensionManifest(null);
         assertEquals("jeUrOCoqaYw/89LmIo3gQlxhipE=", dimManifest.getImageMetadata().get(0).getDigest());
@@ -187,9 +209,8 @@ public class ImageMetadataServiceTest extends CommonTest {
 
     @Test
     void testSerializeImageDimensionManifest() {
-        final String path = ImageMetadataServiceTest.class.getResource(metadataManifest).getPath();
         final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
-        config.setImageMetadataFilePath(path);
+        config.setImageMetadataFilePath(imageMetadataManifestFilePath);
         final ImageMetadataService generator = new ImageMetadataServiceImpl(config);
         final ImageDimensionManifest dimManifest = generator.buildDimensionManifest(null);
         generator.serializeImageDimensionManifest(dimManifest, "/tmp/" + dimensionManifestPid);
@@ -216,9 +237,51 @@ public class ImageMetadataServiceTest extends CommonTest {
     @Test
     void testImageDimensionManifestIOException() {
         final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
-        final ImageMetadataService generator = new ImageMetadataServiceImpl(config);
+        final ImageMetadataService service = new ImageMetadataServiceImpl(config);
         assertThrows(RuntimeException.class, () -> {
-            generator.buildDimensionManifest("/some/non-existing-file.json");
+            service.buildDimensionManifest("/some/non-existing-file.json");
+        });
+    }
+
+    @Test
+    void testUnmarshallDimensionManifestFromFile() {
+        final ImageMetadataServiceConfig config = getImageMetadataServiceConfig();
+        config.setDimensionManifestFilePath(dimensionManifestFilePath);
+        final ImageMetadataService service = new ImageMetadataServiceImpl(config);
+        final List<ImageDimensions> dimList = service.unmarshallDimensionManifestFromFile();
+        assertEquals(3, dimList.size());
+    }
+
+    @Test
+    void testUnmarshallDimensionManifestFromFileIOException() {
+        final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
+        config.setDimensionManifestFilePath(
+                ImageMetadataServiceTest.class.getResource("/manifests/exception-manifest.json").getPath());
+        final ImageMetadataService service = new ImageMetadataServiceImpl(config);
+        assertThrows(RuntimeException.class, () -> {
+            service.unmarshallDimensionManifestFromFile();
+        });
+    }
+
+    @Test
+    void testUnmarshallDimensionManifestFromRemote() {
+        final ImageMetadataServiceConfig config = getImageMetadataServiceConfig();
+        final InputStream is = ImageMetadataServiceTest.class.getResourceAsStream(
+                config.getDimensionManifestFilePath());
+        config.setDimensionManifest(read(is));
+        final ImageMetadataService service = new ImageMetadataServiceImpl(config);
+        final List<ImageDimensions> dimList = service.unmarshallDimensionManifestFromRemote();
+        assertEquals(3, dimList.size());
+    }
+
+    @Test
+    void testUnmarshallDimensionManifestFromRemoteIOException() {
+        final ImageMetadataServiceConfig config = new ImageMetadataServiceConfig();
+        final InputStream is = ImageMetadataServiceTest.class.getResourceAsStream("/manifests/exception-manifest.json");
+        config.setDimensionManifest(read(is));
+        final ImageMetadataService service = new ImageMetadataServiceImpl(config);
+        assertThrows(RuntimeException.class, () -> {
+            service.unmarshallDimensionManifestFromRemote();
         });
     }
 }

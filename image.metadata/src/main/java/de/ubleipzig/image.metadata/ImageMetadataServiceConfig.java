@@ -18,13 +18,16 @@
 
 package de.ubleipzig.image.metadata;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.dropwizard.Configuration;
+
 /**
  * ImageMetadataServiceConfig.
  *
  * @author christopher-johnson
  */
-public class ImageMetadataServiceConfig {
-
+public class ImageMetadataServiceConfig extends Configuration {
 
     private String imageSourceDir;
     private String imageMetadataFilePath;
@@ -38,6 +41,7 @@ public class ImageMetadataServiceConfig {
      *
      * @return {@link String}
      */
+    @JsonProperty
     public String getImageSourceDir() {
         return this.imageSourceDir;
     }
@@ -47,6 +51,7 @@ public class ImageMetadataServiceConfig {
      *
      * @param imageSourceDir imageSourceDir
      */
+    @JsonProperty
     public final void setImageSourceDir(final String imageSourceDir) {
         this.imageSourceDir = imageSourceDir;
     }
@@ -56,6 +61,7 @@ public class ImageMetadataServiceConfig {
      *
      * @return {@link String}
      */
+    @JsonProperty
     public String getImageMetadataManifestOutputPath() {
         return this.imageMetadataManifestOutputPath;
     }
@@ -65,6 +71,7 @@ public class ImageMetadataServiceConfig {
      *
      * @param imageMetadataManifestOutputPath imageMetadataManifestOutputPath
      */
+    @JsonProperty
     public final void setImageMetadataManifestOutputPath(final String imageMetadataManifestOutputPath) {
         this.imageMetadataManifestOutputPath = imageMetadataManifestOutputPath;
     }
@@ -74,6 +81,7 @@ public class ImageMetadataServiceConfig {
      *
      * @return {@link String}
      */
+    @JsonProperty
     public String getDimensionManifestOutputPath() {
         return this.dimensionManifestOutputPath;
     }
@@ -83,6 +91,7 @@ public class ImageMetadataServiceConfig {
      *
      * @param dimensionManifestOutputPath dimensionManifestOutputPath
      */
+    @JsonProperty
     public final void setDimensionManifestOutputPath(final String dimensionManifestOutputPath) {
         this.dimensionManifestOutputPath = dimensionManifestOutputPath;
     }
@@ -92,6 +101,7 @@ public class ImageMetadataServiceConfig {
      *
      * @return {@link String}
      */
+    @JsonProperty
     public String getDimensionManifestFilePath() {
         return this.dimensionManifestFilePath;
     }
@@ -101,6 +111,7 @@ public class ImageMetadataServiceConfig {
      *
      * @param dimensionManifestFilePath dimensionManifestFilePath
      */
+    @JsonProperty
     public final void setDimensionManifestFilePath(final String dimensionManifestFilePath) {
         this.dimensionManifestFilePath = dimensionManifestFilePath;
     }
@@ -146,6 +157,7 @@ public class ImageMetadataServiceConfig {
      *
      * @return {@link String}
      */
+    @JsonProperty
     public String getImageMetadataFilePath() {
         return this.imageMetadataFilePath;
     }
@@ -155,6 +167,7 @@ public class ImageMetadataServiceConfig {
      *
      * @param imageMetadataFilePath imageMetadataFilePath
      */
+    @JsonProperty
     public final void setImageMetadataFilePath(final String imageMetadataFilePath) {
         this.imageMetadataFilePath = imageMetadataFilePath;
     }
