@@ -44,11 +44,9 @@ public class ImageMetadataServiceConfigTest extends CommonTest {
                 ImageMetadataServiceConfig.class, Validators.newValidator(), Jackson.newObjectMapper(), "").build(
                 new File(getClass().getResource("/imageMetadataServiceConfig-test.yml").toURI()));
         assertEquals("/images", config.getImageSourceDir());
-        assertEquals(
-                "/manifests/dimension-manifest-test-ff5fd8bb-859d-4a98-82ce-57aada0c5bb0.json",
+        assertEquals("/manifests/dimension-manifest-test-ff5fd8bb-859d-4a98-82ce-57aada0c5bb0.json",
                 config.getDimensionManifestFilePath());
-        assertEquals(
-                "/manifests/image-manifest-test-73ed7acb-03cd-4122-8d7a-d2b36ec8fc0f.json",
+        assertEquals("/manifests/image-manifest-test-73ed7acb-03cd-4122-8d7a-d2b36ec8fc0f.json",
                 config.getImageMetadataFilePath());
     }
 

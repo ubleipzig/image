@@ -18,9 +18,13 @@
 
 package de.ubleipzig.image.metadata;
 
+import static de.ubleipzig.image.metadata.DefaultFileTypes.JP2;
+import static de.ubleipzig.image.metadata.DefaultFileTypes.JPX;
 import static de.ubleipzig.image.metadata.JsonSerializer.serialize;
 import static de.ubleipzig.image.metadata.JsonSerializer.writeToFile;
+import static de.ubleipzig.image.metadata.OPJDecompress.convertAndDeleteJP2;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import com.drew.imaging.ImageMetadataReader;
@@ -83,7 +87,7 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
         log.info("Running ImageMetadataService...");
         final String imageManifest = buildImageMetadataManifest();
         final String imageManifestOutputPath = imageMetadataServiceConfig.getImageMetadataManifestOutputPath();
-        if ( imageManifestOutputPath != null) {
+        if (imageManifestOutputPath != null) {
             writeToFile(imageManifest, new File(imageManifestOutputPath));
             log.debug("Writing Image Metadata Manifest to: {}", imageManifestOutputPath);
         }
@@ -95,13 +99,23 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
     public String buildImageMetadataManifest() {
         final String collection = imageMetadataServiceConfig.getImageSourceDir();
         try {
-            //this assumes that all image binaries will have filenames that are integers
+            //support JP2
             final Stream<Path> paths = Files.walk(Paths.get(collection)).filter(Files::isRegularFile).filter(
-                    f -> getBaseName(f.getFileName().toString()).matches("\\d+"));
+                    f -> getExtension(f.getFileName().toString()).contains(JP2) || getExtension(
+                            f.getFileName().toString()).contains(JPX));
+            paths.forEach(p -> {
+                final File file = new File(String.valueOf(p.toAbsolutePath()));
+                convertAndDeleteJP2(file);
+            });
+
             final ImageMetadataManifest manifest = new ImageMetadataManifest();
             manifest.setCollection(collection);
             final List<ImageMetadata> imageMetadataList = new ArrayList<>();
-            paths.forEach(p -> {
+
+            //this assumes that all image binaries will have filenames that are integers
+            final Stream<Path> validPaths = Files.walk(Paths.get(collection)).filter(Files::isRegularFile).filter(
+                    f -> getBaseName(f.getFileName().toString()).matches("\\d+"));
+            validPaths.forEach(p -> {
                 final URI uri = p.toUri();
                 final ImageMetadata im = new ImageMetadata();
                 final File file = new File(String.valueOf(p.toAbsolutePath()));

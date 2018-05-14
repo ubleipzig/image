@@ -47,6 +47,18 @@ public abstract class CommonTest {
         return imageMetadataServiceConfig;
     }
 
+    static ImageMetadataServiceConfig getImageMetadataServiceConfig2() {
+        final ImageMetadataServiceConfig imageMetadataServiceConfig;
+        try {
+            imageMetadataServiceConfig = new YamlConfigurationFactory<>(
+                    ImageMetadataServiceConfig.class, Validators.newValidator(), Jackson.newObjectMapper(), "").build(
+                    new File(CommonTest.class.getResource("/imageMetadataServiceConfig-test2.yml").toURI()));
+        } catch (IOException | ConfigurationException | URISyntaxException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return imageMetadataServiceConfig;
+    }
+
     static String read(final InputStream input) {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
             return buffer.lines().collect(Collectors.joining("\n"));

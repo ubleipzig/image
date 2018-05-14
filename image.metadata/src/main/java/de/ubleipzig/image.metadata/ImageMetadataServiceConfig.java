@@ -36,6 +36,8 @@ public class ImageMetadataServiceConfig extends Configuration {
     private String imageMetadataManifest;
     private String imageMetadataManifestOutputPath;
     private String dimensionManifestOutputPath;
+    private String defaultInputImageExtension;
+
     /**
      * getImageSourceDir.
      *
@@ -171,5 +173,4 @@ public class ImageMetadataServiceConfig extends Configuration {
     public final void setImageMetadataFilePath(final String imageMetadataFilePath) {
         this.imageMetadataFilePath = imageMetadataFilePath;
     }
-
 }
