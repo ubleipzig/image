@@ -21,6 +21,7 @@ package de.ubleipzig.image.metadata;
 import static de.ubleipzig.image.metadata.DefaultFileTypes.JP2;
 import static de.ubleipzig.image.metadata.DefaultFileTypes.JPX;
 import static de.ubleipzig.image.metadata.DefaultFileTypes.TIFF;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.FilenameUtils.EXTENSION_SEPARATOR;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
@@ -29,14 +30,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 /**
- * OPJDecompress.
+ * JP2Utils.
  */
-public final class OPJDecompress {
+public final class JP2Utils {
 
-    private static Logger logger = getLogger(OPJDecompress.class);
+    private static Logger logger = getLogger(JP2Utils.class);
 
     /**
      * @param file File
@@ -73,6 +75,44 @@ public final class OPJDecompress {
         }
     }
 
-    private OPJDecompress() {
+    /**
+     *
+     * @param file file
+     * @return imageWidth
+     */
+    public static String getJP2ImageWidth(final File file) {
+        final String inputFile = file.getPath();
+        final String[] commands1 = {"identify", "-format", "%w", inputFile};
+        final ProcessBuilder getWidth = new ProcessBuilder(commands1);
+        try {
+            final String width = IOUtils.toString(getWidth.start().getInputStream(), UTF_8);
+            logger.info("Width is {} for {}", width, inputFile);
+            return width;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     * @param file file
+     * @return imageHeight
+     */
+    public static String getJP2ImageHeight(final File file) {
+        final String inputFile = file.getPath();
+        final String[] commands1 = {"identify", "-format", "%w", inputFile};
+        final ProcessBuilder getWidth = new ProcessBuilder(commands1);
+        final String[] commands2 = {"identify", "-format", "%h", inputFile};
+        final ProcessBuilder getHeight = new ProcessBuilder(commands2);
+        try {
+            final String height = IOUtils.toString(getHeight.start().getInputStream(), UTF_8);
+            logger.info("Height is {} for {}",height, inputFile);
+            return height;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private JP2Utils() {
     }
 }

@@ -15,23 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+
 package de.ubleipzig.image.metadata;
 
+import static de.ubleipzig.image.metadata.DefaultFileTypes.TIFF;
+import static de.ubleipzig.image.metadata.JP2Utils.convertAndDeleteJP2;
+import static org.apache.commons.io.FilenameUtils.EXTENSION_SEPARATOR;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
+import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-public class OPJDecompressTest {
+public class JP2UtilsTest {
 
     @Test
-    void convertJP2() throws IOException {
-        final String baseFilePath = removeExtension(OPJDecompressTest.class.getResource("/j2k/00000040.jpx").getPath());
-        final String inputFile = baseFilePath + ".jpx";
-        final String outputFile = baseFilePath + ".tif";
-        final String[] commands = {"opj_decompress", "-i", inputFile, "-o", outputFile};
-        final ProcessBuilder pb = new ProcessBuilder(commands);
-        final Process p1 = pb.start();
+    void convertJP2() {
+        final File file = new File(JP2UtilsTest.class.getResource("/j2k/00000040.jpx").getPath());
+        convertAndDeleteJP2(file);
+        final String tiff = removeExtension(file.getPath()) + EXTENSION_SEPARATOR + TIFF;
+        assertTrue(new File(tiff).exists());
     }
 }

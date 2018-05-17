@@ -19,9 +19,9 @@ A utility that generates JSON objects that contain image metadata.
 This tool assumes that all images will have integer filenames in accordance with their sequence in the image collection.
 
 ## JPEG2000 Conversion
-This tool recognizes files with the extensions ".jpx" or ".jp2" and will decompress them into TIFF before creating a manifest.
-This requires the host to have the `opj_decompress` utility available in the PATH.  To install this utility, check the [releases](https://github.com/uclouvain/openjpeg/releases)
-Note that the original JPEG2000 files will be deleted from the image source directory.
+This tool recognizes files with the extensions ".jpx" or ".jp2" and will read their dimensions.
+This requires the host to have the ImageMagick `identify` utility compiled with JP2 support available in the PATH.  
+To install this utility, check the [releases](https://github.com/uclouvain/openjpeg/releases)
 
 #### Run as Utility from CLI
 
