@@ -85,7 +85,7 @@ public final class JP2Utils {
         final String[] commands1 = {"identify", "-format", "%w", inputFile};
         final ProcessBuilder getWidth = new ProcessBuilder(commands1);
         try {
-            final String width = IOUtils.toString(getWidth.start().getInputStream(), UTF_8);
+            final String width = IOUtils.toString(getWidth.start().getInputStream(), UTF_8).trim();
             logger.info("Width is {} for {}", width, inputFile);
             return width;
         } catch (IOException e) {
@@ -105,7 +105,7 @@ public final class JP2Utils {
         final String[] commands2 = {"identify", "-format", "%h", inputFile};
         final ProcessBuilder getHeight = new ProcessBuilder(commands2);
         try {
-            final String height = IOUtils.toString(getHeight.start().getInputStream(), UTF_8);
+            final String height = IOUtils.toString(getHeight.start().getInputStream(), UTF_8).trim();
             logger.info("Height is {} for {}",height, inputFile);
             return height;
         } catch (IOException e) {
