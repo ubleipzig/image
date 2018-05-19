@@ -24,7 +24,8 @@ ext {
     dropwizardVersion = '1.2.0'
     logbackVersion = '1.2.3'
     metadataExtractorVersion = '2.11.0'
-    jacksonVersion = '2.9.1'
+    jacksonVersion = '2.9.5'
+    validationVersion = '2.0.1.Final'
 
     /* Testing */
     apiguardianVersion = '1.0.0'

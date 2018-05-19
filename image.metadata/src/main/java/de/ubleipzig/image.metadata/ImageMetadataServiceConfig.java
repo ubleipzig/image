@@ -20,14 +20,12 @@ package de.ubleipzig.image.metadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.dropwizard.Configuration;
-
 /**
  * ImageMetadataServiceConfig.
  *
  * @author christopher-johnson
  */
-public class ImageMetadataServiceConfig extends Configuration {
+public class ImageMetadataServiceConfig {
 
     private String imageSourceDir;
     private String imageMetadataFilePath;

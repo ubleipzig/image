@@ -20,9 +20,8 @@ package de.ubleipzig.image.metadata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.File;
 
@@ -40,15 +39,14 @@ public class ImageMetadataServiceConfigTest extends CommonTest {
 
     @Test
     void testImageMetadataServiceConfig() throws Exception {
-        final ImageMetadataServiceConfig config = new YamlConfigurationFactory<>(
-                ImageMetadataServiceConfig.class, Validators.newValidator(), Jackson.newObjectMapper(), "").build(
-                new File(getClass().getResource("/imageMetadataServiceConfig-test.yml").toURI()));
+        final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        final ImageMetadataServiceConfig config = mapper.readValue(
+                new File(getClass().getResource("/imageMetadataServiceConfig-test.yml").toURI()),
+                ImageMetadataServiceConfig.class);
         assertEquals("/images", config.getImageSourceDir());
-        assertEquals(
-                "/manifests/dimension-manifest-test-ff5fd8bb-859d-4a98-82ce-57aada0c5bb0.json",
+        assertEquals("/manifests/dimension-manifest-test-ff5fd8bb-859d-4a98-82ce-57aada0c5bb0.json",
                 config.getDimensionManifestFilePath());
-        assertEquals(
-                "/manifests/image-manifest-test-73ed7acb-03cd-4122-8d7a-d2b36ec8fc0f.json",
+        assertEquals("/manifests/image-manifest-test-73ed7acb-03cd-4122-8d7a-d2b36ec8fc0f.json",
                 config.getImageMetadataFilePath());
     }
 

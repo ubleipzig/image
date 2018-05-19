@@ -4,10 +4,12 @@ apply plugin: "application"
 mainClassName = "de.ubleipzig.image.metadata.ImageMetadataServiceDriver"
 
 dependencies {
-    api("io.dropwizard:dropwizard-core:$dropwizardVersion")
     implementation("commons-io:commons-io:$commonsIoVersion") { force = true }
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("javax.validation:validation-api:$validationVersion")
+
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.drewnoakes:metadata-extractor:$metadataExtractorVersion")

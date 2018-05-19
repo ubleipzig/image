@@ -18,10 +18,8 @@
 
 package de.ubleipzig.image.metadata;
 
-import io.dropwizard.configuration.ConfigurationException;
-import io.dropwizard.configuration.YamlConfigurationFactory;
-import io.dropwizard.jackson.Jackson;
-import io.dropwizard.jersey.validation.Validators;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,10 +36,11 @@ public abstract class CommonTest {
     static ImageMetadataServiceConfig getImageMetadataServiceConfig() {
         final ImageMetadataServiceConfig imageMetadataServiceConfig;
         try {
-            imageMetadataServiceConfig = new YamlConfigurationFactory<>(
-                    ImageMetadataServiceConfig.class, Validators.newValidator(), Jackson.newObjectMapper(), "").build(
-                    new File(CommonTest.class.getResource("/imageMetadataServiceConfig-test.yml").toURI()));
-        } catch (IOException | ConfigurationException | URISyntaxException e) {
+            final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            imageMetadataServiceConfig = mapper.readValue(
+                    new File(CommonTest.class.getResource("/imageMetadataServiceConfig-test.yml").toURI()),
+                    ImageMetadataServiceConfig.class);
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e.getMessage());
         }
         return imageMetadataServiceConfig;
