@@ -37,6 +37,12 @@ public class ImageMetadata {
     private String digest;
 
     @JsonProperty
+    private Integer height;
+
+    @JsonProperty
+    private Integer width;
+
+    @JsonProperty
     private List<ImageMetadataDirectory> directories;
 
     /**
@@ -94,6 +100,42 @@ public class ImageMetadata {
      */
     public void setDigest(final String digest) {
         this.digest = digest;
+    }
+
+    /**
+     * getHeight.
+     *
+     * @return Integer
+     */
+    public Integer getHeight() {
+        return this.height;
+    }
+
+    /**
+     * setHeight.
+     *
+     * @param height Integer
+     */
+    public void setHeight(final Integer height) {
+        this.height = height;
+    }
+
+    /**
+     * getWidth.
+     *
+     * @return Integer
+     */
+    public Integer getWidth() {
+        return this.width;
+    }
+
+    /**
+     * setWidth.
+     *
+     * @param width Integer
+     */
+    public void setWidth(final Integer width) {
+        this.width = width;
     }
 
 }

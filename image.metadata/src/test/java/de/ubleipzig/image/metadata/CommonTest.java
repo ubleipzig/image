@@ -46,6 +46,19 @@ public abstract class CommonTest {
         return imageMetadataServiceConfig;
     }
 
+    static ImageMetadataServiceConfig getImageMetadataServiceConfig2() {
+        final ImageMetadataServiceConfig imageMetadataServiceConfig;
+        try {
+            final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            imageMetadataServiceConfig = mapper.readValue(
+                    new File(CommonTest.class.getResource("/imageMetadataServiceConfig-test2.yml").toURI()),
+                    ImageMetadataServiceConfig.class);
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return imageMetadataServiceConfig;
+    }
+
     static String read(final InputStream input) {
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
             return buffer.lines().collect(Collectors.joining("\n"));

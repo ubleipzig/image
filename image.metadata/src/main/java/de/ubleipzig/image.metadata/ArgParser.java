@@ -115,7 +115,7 @@ class ArgParser {
         final PrintWriter writer = new PrintWriter(out);
         writer.println("\n-----------------------\n" + message + "\n-----------------------\n");
         writer.println("Running Image Manifest Service from command line arguments");
-        formatter.printHelp(writer, 80, "./producer", "", configOptions, 4, 4, "", true);
+        formatter.printHelp(writer, 80, "./image.metadata", "", configOptions, 4, 4, "", true);
         writer.println("\n");
         writer.flush();
         throw new RuntimeException(message);

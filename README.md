@@ -18,11 +18,22 @@ A utility that generates JSON objects that contain image metadata.
 ## Sequenced Image Filename Specification
 This tool assumes that all images will have integer filenames in accordance with their sequence in the image collection.
 
-#### Run as Utility from CLI
+## JPEG2000 Conversion
+This tool recognizes files with the extensions ".jpx" or ".jp2" and will read their dimensions.
+This requires the host to have the ImageMagick `identify` utility compiled with JP2 support available in the PATH.  
+To install this utility, check the [releases](https://github.com/uclouvain/openjpeg/releases)
 
+## Usage
 ```bash
-./image.metadata -i {$image_source_directory} -o {$dimension_manifest_output_file_path} -z {$metadata_manifest_output_path} (optional)
+image.metadata -i image_source_directory -o dimension_manifest [-z] metadata_manifest
 ```
+
+| Argument  | Description | Example     |
+| --------  | ----------- | ----------- | 
+| image_source_directory_path | the file path to the image sources | /images |
+| dimension_manifest | a file path to the manifest outputfile | /output.json |
+| metadata_manifest (optional) | a file path to the metadata manifest outputfile | /manifest.json | 
+
 
 #### Use in Java:
 

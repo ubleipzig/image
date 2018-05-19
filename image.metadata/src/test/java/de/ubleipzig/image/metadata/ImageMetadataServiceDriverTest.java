@@ -31,4 +31,13 @@ public class ImageMetadataServiceDriverTest extends CommonTest {
                 "/tmp/output.json"};
         ImageMetadataServiceDriver.main(args);
     }
+
+    @Test
+    public void testJ2KType() {
+        imageSourceDir = ArgParserTest.class.getResource(getImageMetadataServiceConfig2().getImageSourceDir())
+                                            .getPath();
+        final String[] args = new String[]{"-i", imageSourceDir, "-z", "/tmp/metadata-manifest.json", "-o",
+                "/tmp/output.json"};
+        ImageMetadataServiceDriver.main(args);
+    }
 }

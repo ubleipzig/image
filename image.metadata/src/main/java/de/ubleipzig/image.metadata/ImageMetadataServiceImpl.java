@@ -18,9 +18,14 @@
 
 package de.ubleipzig.image.metadata;
 
+import static de.ubleipzig.image.metadata.DefaultFileTypes.JP2;
+import static de.ubleipzig.image.metadata.DefaultFileTypes.JPX;
+import static de.ubleipzig.image.metadata.JP2Utils.getJP2ImageHeight;
+import static de.ubleipzig.image.metadata.JP2Utils.getJP2ImageWidth;
 import static de.ubleipzig.image.metadata.JsonSerializer.serialize;
 import static de.ubleipzig.image.metadata.JsonSerializer.writeToFile;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import com.drew.imaging.ImageMetadataReader;
@@ -83,7 +88,7 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
         log.info("Running ImageMetadataService...");
         final String imageManifest = buildImageMetadataManifest();
         final String imageManifestOutputPath = imageMetadataServiceConfig.getImageMetadataManifestOutputPath();
-        if ( imageManifestOutputPath != null) {
+        if (imageManifestOutputPath != null) {
             writeToFile(imageManifest, new File(imageManifestOutputPath));
             log.debug("Writing Image Metadata Manifest to: {}", imageManifestOutputPath);
         }
@@ -91,17 +96,68 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
         serializeImageDimensionManifest(dimManifest, imageMetadataServiceConfig.getDimensionManifestOutputPath());
     }
 
+    private Stream<Path> walkJP2Collection(final String collection) {
+        try {
+            return Files.walk(Paths.get(collection)).filter(Files::isRegularFile).filter(
+                    f -> getExtension(f.getFileName().toString()).contains(JP2) || getExtension(
+                            f.getFileName().toString()).contains(JPX));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private Stream<Path> walkIntegerFilenameCollection(final String collection) {
+        try {
+            return Files.walk(Paths.get(collection)).filter(Files::isRegularFile).filter(
+                    f -> getBaseName(f.getFileName().toString()).matches("\\d+"));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private Boolean isJP2Collection(final String collection) {
+        try {
+            return Files.walk(Paths.get(collection)).filter(Files::isRegularFile).anyMatch(
+                    f -> getExtension(f.getFileName().toString()).contains(JP2) || getExtension(
+                            f.getFileName().toString()).contains(JPX));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     @Override
     public String buildImageMetadataManifest() {
         final String collection = imageMetadataServiceConfig.getImageSourceDir();
-        try {
-            //this assumes that all image binaries will have filenames that are integers
-            final Stream<Path> paths = Files.walk(Paths.get(collection)).filter(Files::isRegularFile).filter(
-                    f -> getBaseName(f.getFileName().toString()).matches("\\d+"));
-            final ImageMetadataManifest manifest = new ImageMetadataManifest();
-            manifest.setCollection(collection);
-            final List<ImageMetadata> imageMetadataList = new ArrayList<>();
+        final ImageMetadataManifest manifest = new ImageMetadataManifest();
+        manifest.setCollection(collection);
+        final List<ImageMetadata> imageMetadataList = new ArrayList<>();
+
+        //support JP2
+        if (isJP2Collection(collection)) {
+            final Stream<Path> paths = walkJP2Collection(collection);
             paths.forEach(p -> {
+                final File file = new File(String.valueOf(p.toAbsolutePath()));
+                final String digest = getDigest(file);
+                final ImageMetadata im = new ImageMetadata();
+                im.setDigest(digest);
+                final String filename = file.getName();
+                im.setFilename(filename);
+                log.debug("Setting Digest {} for filename {}", digest, filename);
+                final String height = getJP2ImageHeight(file);
+                im.setHeight(Integer.valueOf(height));
+                final String width = getJP2ImageWidth(file);
+                im.setWidth(Integer.valueOf(width));
+                imageMetadataList.add(im);
+            });
+            imageMetadataList.sort(Comparator.comparing(ImageMetadata::getFilename));
+            manifest.setImageMetadata(imageMetadataList);
+            log.debug("Serializing Image Manifest to Json");
+            final Optional<String> json = serialize(manifest);
+            return json.orElse(null);
+        } else {
+            //this assumes that all image binaries will have filenames that are integers
+            final Stream<Path> validPaths = walkIntegerFilenameCollection(collection);
+            validPaths.forEach(p -> {
                 final URI uri = p.toUri();
                 final ImageMetadata im = new ImageMetadata();
                 final File file = new File(String.valueOf(p.toAbsolutePath()));
@@ -114,7 +170,7 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
                 Metadata metadata = null;
                 try {
                     metadata = ImageMetadataReader.readMetadata(uri.toURL().openStream());
-                    log.debug("Reading Metatdata from filename {}", file.getName());
+                    log.debug("Reading Metadata from filename {}", file.getName());
                 } catch (ImageProcessingException | IOException e) {
                     e.printStackTrace();
                 }
@@ -142,8 +198,6 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
             log.debug("Serializing Image Manifest to Json");
             final Optional<String> json = serialize(manifest);
             return json.orElse(null);
-        } catch (IOException e) {
-            throw new RuntimeException(IO_ERROR_MESSAGE + e.getMessage());
         }
     }
 
@@ -171,24 +225,29 @@ public class ImageMetadataServiceImpl implements ImageMetadataService {
                 final ImageDimensions dims = new ImageDimensions();
                 dims.setFilename(i.getFilename());
                 dims.setDigest(i.getDigest());
-                final List<ImageMetadataDirectory> dirList = i.getDirectories();
-                dirList.forEach(d -> {
-                    final List<ImageMetadataTag> tagList = d.getTags();
-                    tagList.forEach(t -> {
-                        final String tagName = t.getTagName();
-                        if (tagName.equals("Image Height")) {
-                            final String[] parts = t.getTagDescription().split(" ");
-                            final String height = parts[0];
-                            dims.setHeight(Integer.parseInt(height));
-                        }
+                if (i.getDirectories() != null) {
+                    final List<ImageMetadataDirectory> dirList = i.getDirectories();
+                    dirList.forEach(d -> {
+                        final List<ImageMetadataTag> tagList = d.getTags();
+                        tagList.forEach(t -> {
+                            final String tagName = t.getTagName();
+                            if (tagName.equals("Image Height")) {
+                                final String[] parts = t.getTagDescription().split(" ");
+                                final String height = parts[0];
+                                dims.setHeight(Integer.parseInt(height));
+                            }
 
-                        if (tagName.equals("Image Width")) {
-                            final String[] parts = t.getTagDescription().split(" ");
-                            final String width = parts[0];
-                            dims.setWidth(Integer.parseInt(width));
-                        }
+                            if (tagName.equals("Image Width")) {
+                                final String[] parts = t.getTagDescription().split(" ");
+                                final String width = parts[0];
+                                dims.setWidth(Integer.parseInt(width));
+                            }
+                        });
                     });
-                });
+                } else {
+                    dims.setHeight(i.getHeight());
+                    dims.setWidth(i.getWidth());
+                }
                 dimList.add(dims);
             });
             dimManifest.setImageMetadata(dimList);
